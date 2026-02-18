@@ -1,0 +1,25 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260213122131
+Username: H-PAVILION-X360\mdhar
+RunAs User: H-PAVILION-X360\mdhar
+Configuration Name: 
+Machine: H-PAVILION-X360 (Microsoft Windows NT 10.0.22631.0)
+Host Application: C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe -command Start-Transcript temp.txt
+Process ID: 7420
+PSVersion: 5.1.22621.4391
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4391
+BuildVersion: 10.0.22621.4391
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is temp.txt
+PS>$global:?
+True
+**********************
+Windows PowerShell transcript end
+End time: 20260213122131
+**********************
