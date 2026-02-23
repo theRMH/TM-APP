@@ -33,7 +33,7 @@ class TenallyScriptSubmissionScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: WhiteColor,
-            iconTheme: const IconThemeData(color: BlackColor),
+            iconTheme: IconThemeData(color: BlackColor),
             title: Text(
               "Script Submission",
               style: TextStyle(

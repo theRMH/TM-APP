@@ -83,8 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   networkimageconvert() {
     (() async {
-      http.Response response =
-          await http.get(Uri.parse(Config.imageUrl + networkimage.toString()));
+      http.Response response = await http.get(
+        Uri.parse(Config.imageUrl + networkimage.toString()),
+      );
       if (mounted) {
         print(response.bodyBytes);
         setState(() {
@@ -98,253 +99,279 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgcolor,
-      body: GetBuilder<HomePageController>(builder: (homePageController) {
-        final info = homePageController.homeInfo;
-        if (!homePageController.isLoading || info == null) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+      body: GetBuilder<HomePageController>(
+        builder: (homePageController) {
+          final info = homePageController.homeInfo;
+          if (!homePageController.isLoading || info == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        final _BannerData? featuredBanner = _getFeaturedEvent(info);
-        final homeData = info.homeData;
-        final int currentSignature = homeData.catlist.fold(
+          final _FeaturedBannerData featuredBanner = _getFeaturedEvent(info);
+          final homeData = info.homeData;
+          final thisMonthEvents = homeData.thisMonthEvent;
+          final int currentSignature = homeData.catlist.fold(
             0,
             (prev, cat) =>
-                prev ^ cat.id.hashCode ^ cat.title.hashCode ^ cat.totalEvent);
-        if (_homeDataSignature != currentSignature) {
-          _homeDataSignature = currentSignature;
-          _needsCategoryReset = true;
-          _categoriesValidated = false;
-        }
-        _prepareCategoryValidation(homeData);
-        final availableCategories = homeData.catlist
-            .where((cat) =>
-                cat.totalEvent > 0 && !_hiddenCategoryIds.contains(cat.id))
-            .toList();
-        final displayedEvents = _getDisplayedEvents(homeData);
-        final bool isCategoryView = selectedCategoryId != 'all';
-        final bool shouldShowLoading = isCategoryView && isCategoryLoading;
-        final int visibleEventCount =
-            displayedEvents.length > 6 ? 6 : displayedEvents.length;
+                prev ^ cat.id.hashCode ^ cat.title.hashCode ^ cat.totalEvent,
+          );
+          if (_homeDataSignature != currentSignature) {
+            _homeDataSignature = currentSignature;
+            _needsCategoryReset = true;
+            _categoriesValidated = false;
+          }
+          _prepareCategoryValidation(homeData);
+          final availableCategories = homeData.catlist
+              .where(
+                (cat) =>
+                    cat.totalEvent > 0 && !_hiddenCategoryIds.contains(cat.id),
+              )
+              .toList();
+          final displayedEvents = _getDisplayedEvents(homeData);
+          final bool isCategoryView = selectedCategoryId != 'all';
+          final bool shouldShowLoading = isCategoryView && isCategoryLoading;
+          final int visibleEventCount = displayedEvents.length;
 
-        return SafeArea(
-          child: NestedScrollView(
-                  controller: _scrollController,
-                  headerSliverBuilder: (context, innerBoxIsScrolled) {
-                    return [
-                      SliverAppBar(
-                        elevation: 0,
-                        pinned: true,
-                        expandedHeight: Get.size.height * 0.476,
-                        titleSpacing: 0,
-                        backgroundColor:
-                            _isShrink ? gradient.defoultColor : transparent,
-                        leading: Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Image.asset(
-                            "assets/homelogo.png",
-                            height: 20,
-                            width: 30,
-                          ),
-                        ),
-                        title: const SizedBox.shrink(),
-                        actions: [
-                          InkWell(
-                            onTap: () {
-                              if (getData.read("UserLogin") != null) {
-                                Get.to(NotificationScreen());
-                              } else {
-                                Get.to(() => LoginScreen());
-                              }
-                            },
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              alignment: Alignment.center,
-                              child: Image.asset(
-                                "assets/Notification.png",
-                                height: 20,
-                                width: 20,
-                                color: gradient.defoultColor,
-                              ),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: WhiteColor,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                        ],
-                        flexibleSpace: FlexibleSpaceBar(
-                          background: featuredBanner != null
-                              ? Padding(
-                                  padding: const EdgeInsets.only(top: 48),
-                                  child: _buildFeaturedBanner(
-                                    featuredBanner,
-                                    compact: true,
-                                  ),
-                                )
-                              : Container(
-                                  width: Get.size.width,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        gradient.defoultColor,
-                                        const Color(0xFF1C1F35),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                  ),
-                                ),
-                        ),
+          return SafeArea(
+            child: NestedScrollView(
+              controller: _scrollController,
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverAppBar(
+                    elevation: 0,
+                    pinned: true,
+                    expandedHeight: Get.size.height * 0.476,
+                    titleSpacing: 0,
+                    backgroundColor: _isShrink
+                        ? gradient.defoultColor
+                        : transparent,
+                    leading: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Image.asset(
+                        "assets/homelogo.png",
+                        height: 20,
+                        width: 30,
                       ),
-                    ];
-                  },
-                  body: RefreshIndicator(
-                    color: gradient.defoultColor,
-                    onRefresh: () {
-                      return Future.delayed(
-                        Duration(seconds: 2),
-                        () {
-                          homePageController.getHomeDataApi();
+                    ),
+                    title: const SizedBox.shrink(),
+                    actions: [
+                      InkWell(
+                        onTap: () {
+                          if (getData.read("UserLogin") != null) {
+                            Get.to(NotificationScreen());
+                          } else {
+                            Get.to(() => LoginScreen());
+                          }
                         },
-                      );
-                    },
-                      child: ListView(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: NeverScrollableScrollPhysics(),
-                      children: [
-                        SizedBox(
-                          height: 20,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            "assets/Notification.png",
+                            height: 20,
+                            width: 20,
+                            color: gradient.defoultColor,
+                          ),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: WhiteColor,
+                          ),
                         ),
-                        Row(
-                          children: [
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            "Latest Events".tr,
-                            style: TextStyle(
-                              fontFamily: FontFamily.gilroyBold,
-                              color: BlackColor,
-                              fontSize: 22,
-                            ),
-                          ),
-                          Spacer(),
-                          TextButton(
-                            onPressed: () {
-                              Get.to(LatestEvent(eventStaus: "1"));
-                            },
-                            child: Text(
-                              "See All".tr,
-                              style: TextStyle(
-                                fontFamily: FontFamily.gilroyMedium,
-                                color: gradient.defoultColor,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
                       ),
-                        homeData.latestEvent.isNotEmpty
-                            ? SizedBox(
-                                height: 320,
-                                width: Get.size.width,
-                                child: ListView.builder(
-                                  itemCount: homeData.latestEvent.length.clamp(0, 5),
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, index) {
-                                    return InkWell(
-                                      onTap: () async {
-                                        await eventDetailsController
-                                            .getEventData(
-                                          eventId: homeData.latestEvent[index].eventId,
-                                        );
-                                        Get.toNamed(
-                                          Routes.eventDetailsScreen,
-                                          arguments: {
-                                            "eventId": homeData.latestEvent[index].eventId,
-                                            "bookStatus": "1"
-                                          },
-                                        );
+                      SizedBox(width: 5),
+                    ],
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Padding(
+                        padding: const EdgeInsets.only(top: 48),
+                        child: _buildFeaturedBanner(
+                          featuredBanner,
+                          compact: true,
+                        ),
+                      ),
+                    ),
+                  ),
+                ];
+              },
+              body: RefreshIndicator(
+                color: gradient.defoultColor,
+                onRefresh: () {
+                  return Future.delayed(Duration(seconds: 2), () {
+                    homePageController.getHomeDataApi();
+                  });
+                },
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        SizedBox(width: 15),
+                        Text(
+                          "Latest Events".tr,
+                          style: TextStyle(
+                            fontFamily: FontFamily.gilroyBold,
+                            color: BlackColor,
+                            fontSize: 22,
+                          ),
+                        ),
+                        Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            Get.to(LatestEvent(eventStaus: "2"));
+                          },
+                          child: Text(
+                            "See All".tr,
+                            style: TextStyle(
+                              fontFamily: FontFamily.gilroyMedium,
+                              color: gradient.defoultColor,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                      ],
+                    ),
+                    thisMonthEvents.isNotEmpty
+                        ? SizedBox(
+                            height: 320,
+                            width: Get.size.width,
+                            child: ListView.builder(
+                              itemCount: thisMonthEvents.length.clamp(
+                                0,
+                                5,
+                              ),
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                final event = thisMonthEvents[index];
+                                return InkWell(
+                                  onTap: () async {
+                                    await eventDetailsController.getEventData(
+                                      eventId: event.eventId,
+                                    );
+                                    Get.toNamed(
+                                      Routes.eventDetailsScreen,
+                                      arguments: {
+                                        "eventId": event.eventId,
+                                        "bookStatus": "1",
                                       },
-                                      child: Container(
-                                        height: 320,
-                                        width: 240,
-                                        margin: EdgeInsets.only(
-                                            left: 10, right: 10, bottom: 10),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          child: Stack(
-                                            children: [
-                                              SizedBox(
-                                                height: 320,
-                                                width: 240,
-                                                child: FadeInImage.assetNetwork(
-                                                  fadeInCurve:
-                                                      Curves.easeInCirc,
-                                                  placeholder:
-                                                      "assets/ezgif.com-crop.gif",
-                                                  height: 320,
-                                                  width: 240,
-                                                  placeholderCacheHeight: 320,
-                                                  placeholderCacheWidth: 240,
-                                                  placeholderFit: BoxFit.fill,
-                                                  // placeholderScale: 1.0,
-                                                  image:
-                                                      "${Config.imageUrl}${homeData.latestEvent[index].eventImg}",
-                                                  fit: BoxFit.cover,
-                                                ),
-
-                                              ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                    stops: [0.6, 0.8, 1.5],
-                                                    colors: [
-                                                      Colors.transparent,
-                                                      const Color.fromRGBO(0, 0, 0, 0.5),
-                                                      const Color.fromRGBO(0, 0, 0, 0.5),
-                                                    ],
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 320,
+                                    width: 240,
+                                    margin: EdgeInsets.only(
+                                      left: 10,
+                                      right: 10,
+                                      bottom: 10,
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(30),
+                                      child: Stack(
+                                        children: [
+                                          SizedBox(
+                                            height: 320,
+                                            width: 240,
+                                            child: FadeInImage.assetNetwork(
+                                              fadeInCurve: Curves.easeInCirc,
+                                              placeholder:
+                                                  "assets/ezgif.com-crop.gif",
+                                              height: 320,
+                                              width: 240,
+                                              placeholderCacheHeight: 320,
+                                              placeholderCacheWidth: 240,
+                                              placeholderFit: BoxFit.fill,
+                                              // placeholderScale: 1.0,
+                                              image:
+                                                  "${Config.imageUrl}${event.eventImg}",
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                stops: [0.6, 0.8, 1.5],
+                                                colors: [
+                                                  Colors.transparent,
+                                                  const Color.fromRGBO(
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    0.5,
                                                   ),
-                                                  //border: Border.all(color: lightgrey),
-                                                ),
+                                                  const Color.fromRGBO(
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    0.5,
+                                                  ),
+                                                ],
                                               ),
-                                              Positioned(
+                                              //border: Border.all(color: lightgrey),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 5,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 10,
                                                 bottom: 5,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 10,
-                                                          bottom: 5,
-                                                          right: 10),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                right: 10,
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 240,
+                                                    child: Text(
+                                                      event.eventTitle,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                        fontFamily: FontFamily
+                                                            .gilroyBold,
+                                                        fontSize: 17,
+                                                        color: WhiteColor,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  Text(
+                                                    event.eventSdate,
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                      fontFamily: FontFamily
+                                                          .gilroyMedium,
+                                                      color: WhiteColor,
+                                                      fontSize: 15,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 5),
+                                                  Row(
                                                     children: [
+                                                      Image.asset(
+                                                        "assets/Location.png",
+                                                        color: WhiteColor,
+                                                        height: 15,
+                                                        width: 15,
+                                                      ),
+                                                      SizedBox(width: 4),
                                                       SizedBox(
-                                                        width: 240,
+                                                        width: 210,
                                                         child: Text(
-                                                        homeData.latestEvent[index]
-                                                            .eventTitle,
+                                                          event.eventPlaceName,
                                                           maxLines: 1,
                                                           style: TextStyle(
-                                                            fontFamily:
-                                                                FontFamily
-                                                                    .gilroyBold,
-                                                            fontSize: 17,
+                                                            fontFamily: FontFamily
+                                                                .gilroyMedium,
+                                                            fontSize: 15,
                                                             color: WhiteColor,
                                                             overflow:
                                                                 TextOverflow
@@ -352,262 +379,196 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(
-                                                        height: 8,
-                                                      ),
-                                                      Text(
-                                                        homeData.latestEvent[index]
-                                                            .eventSdate,
-                                                        maxLines: 1,
-                                                        style: TextStyle(
-                                                          fontFamily: FontFamily
-                                                              .gilroyMedium,
-                                                          color: WhiteColor,
-                                                          fontSize: 15,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Image.asset(
-                                                            "assets/Location.png",
-                                                            color: WhiteColor,
-                                                            height: 15,
-                                                            width: 15,
-                                                          ),
-                                                          SizedBox(
-                                                            width: 4,
-                                                          ),
-                                                          SizedBox(
-                                                            width: 210,
-                                                            child: Text(
-                                                              homeData.latestEvent[index]
-                                                                      .eventPlaceName,
-                                                              maxLines: 1,
-                                                              style: TextStyle(
-                                                                fontFamily:
-                                                                    FontFamily
-                                                                        .gilroyMedium,
-                                                                fontSize: 15,
-                                                                color:
-                                                                    WhiteColor,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      )
                                                     ],
                                                   ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: WhiteColor,
-                                        ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                            : Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                height: 150,
-                                width: 200,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage("assets/emptyOrder.png")),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                "No shows are listed yet.",
-                                style: TextStyle(
-                                    fontFamily: FontFamily.gilroyBold,
-                                    color: BlackColor,
-                                    fontSize: 15),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                "Check back soon for upcoming events.",
-                                style: TextStyle(
-                                    fontFamily: FontFamily.gilroyMedium,
-                                    color: greyColor),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Explore Shows",
-                                style: TextStyle(
-                                  fontFamily: FontFamily.gilroyBold,
-                                  color: BlackColor,
-                                  fontSize: 22,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    _buildCategoryChip(
-                                      title: "All".tr,
-                                      isSelected: selectedCategoryId == 'all',
-                                      onTap: () {
-                                        setState(() {
-                                          selectedCategoryId = 'all';
-                                        });
-                                      },
-                                    ),
-                                    ...availableCategories.map((category) {
-                                      return _buildCategoryChip(
-                                        title: category.title,
-                                        imageUrl:
-                                            "${Config.imageUrl}${category.catImg}",
-                                        isSelected:
-                                            selectedCategoryId == category.id,
-                                        onTap: () {
-                                          setState(() {
-                                            selectedCategoryId = category.id;
-                                          });
-                                          _loadCategoryEvents(category.id);
-                                        },
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: shouldShowLoading
-                              ? Center(
-                                  child: CircularProgressIndicator(
-                                    color: gradient.defoultColor,
-                                  ),
-                                )
-                              : displayedEvents.isNotEmpty
-                                  ? GridView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: visibleEventCount,
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        crossAxisSpacing: 12,
-                                        mainAxisSpacing: 12,
-                                        childAspectRatio: 0.65,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final event = displayedEvents[index];
-                                        return _buildExploreShowCard(event);
-                                      },
-                                    )
-                                  : Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Container(
-                                            height: 150,
-                                            width: 200,
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: AssetImage(
-                                                    "assets/emptyOrder.png"),
+                                                ],
                                               ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(
-                                            "No shows are listed yet.",
-                                            style: TextStyle(
-                                              fontFamily:
-                                                  FontFamily.gilroyBold,
-                                              color: BlackColor,
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                            "Check back soon for upcoming events.",
-                                            style: TextStyle(
-                                              fontFamily:
-                                                  FontFamily.gilroyMedium,
-                                              color: greyColor,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                        ),
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Center(
-                          child: TextButton(
-                            onPressed: () {
-                              Get.to(LatestEvent(eventStaus: "2"));
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: gradient.defoultColor,
-                              textStyle: TextStyle(
-                                fontFamily: FontFamily.gilroyBold,
-                                fontSize: 15,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      color: WhiteColor,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: 20),
+                                Container(
+                                  height: 150,
+                                  width: 200,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                        "assets/emptyOrder.png",
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  "No shows are listed yet.",
+                                  style: TextStyle(
+                                    fontFamily: FontFamily.gilroyBold,
+                                    color: BlackColor,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  "Check back soon for upcoming events.",
+                                  style: TextStyle(
+                                    fontFamily: FontFamily.gilroyMedium,
+                                    color: greyColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                    SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Explore Shows",
+                            style: TextStyle(
+                              fontFamily: FontFamily.gilroyBold,
+                              color: BlackColor,
+                              fontSize: 22,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                _buildCategoryChip(
+                                  title: "All".tr,
+                                  isSelected: selectedCategoryId == 'all',
+                                  onTap: () {
+                                    setState(() {
+                                      selectedCategoryId = 'all';
+                                    });
+                                  },
+                                ),
+                                ...availableCategories.map((category) {
+                                  return _buildCategoryChip(
+                                    title: category.title,
+                                    imageUrl:
+                                        "${Config.imageUrl}${category.catImg}",
+                                    isSelected:
+                                        selectedCategoryId == category.id,
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategoryId = category.id;
+                                      });
+                                      _loadCategoryEvents(category.id);
+                                    },
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: shouldShowLoading
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                color: gradient.defoultColor,
+                              ),
+                            )
+                          : displayedEvents.isNotEmpty
+                          ? GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: visibleEventCount,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12,
+                                    childAspectRatio: 0.65,
+                                  ),
+                              itemBuilder: (context, index) {
+                                final event = displayedEvents[index];
+                                return _buildExploreShowCard(event);
+                              },
+                            )
+                          : Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: 20),
+                                  Container(
+                                    height: 150,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                          "assets/emptyOrder.png",
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "No shows are listed yet.",
+                                    style: TextStyle(
+                                      fontFamily: FontFamily.gilroyBold,
+                                      color: BlackColor,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Check back soon for upcoming events.",
+                                    style: TextStyle(
+                                      fontFamily: FontFamily.gilroyMedium,
+                                      color: greyColor,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Text("View All"),
+                    ),
+                    SizedBox(height: 12),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Get.to(LatestEvent(eventStaus: "1"));
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: gradient.defoultColor,
+                          textStyle: TextStyle(
+                            fontFamily: FontFamily.gilroyBold,
+                            fontSize: 15,
                           ),
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                      ],
+                        child: Text("View All"),
+                      ),
                     ),
-                  ),
-                )
-        );
-      }),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
     // return GetBuilder<HomePageController>(
     //   builder: (controller) {
@@ -1769,56 +1730,113 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _BannerData? _getFeaturedEvent(HomeInfo info) {
+  void _openFeatured(_FeaturedBannerData data) {
+    if (data.isPage) {
+      Get.toNamed(
+        Routes.loreamScreen,
+        arguments: {
+          "title": data.title,
+          "discription": data.pageDescription.isNotEmpty
+              ? data.pageDescription
+              : data.subtitle,
+        },
+      );
+      return;
+    }
+    if (data.eventId.isNotEmpty) {
+      _openEvent(data.eventId);
+    }
+  }
+
+  _FeaturedBannerData _getFeaturedEvent(HomeInfo info) {
+    final featured = info.homeData.featured;
+    if (featured != null && featured.isEnabled) {
+      final subtitle = featured.description.isNotEmpty
+          ? featured.description
+          : (featured.eventPlaceName.isNotEmpty
+                ? "${featured.eventPlaceName} • ${featured.eventSdate}"
+                : "");
+      return _FeaturedBannerData(
+        type: featured.type,
+        title: featured.title.isNotEmpty ? featured.title : "featured_event".tr,
+        subtitle: subtitle,
+        image: featured.image,
+        buttonTitle: featured.buttonTitle,
+        pillName: featured.pillName,
+        eventId: featured.eventId,
+        pageId: featured.pageId,
+        pageDescription: featured.description,
+      );
+    }
+
+    Event? fallbackEvent;
     if (info.homeData.nearbyEvent.isNotEmpty) {
-      final event = info.homeData.nearbyEvent.first;
-      return _BannerData(
-        eventId: event.eventId,
-        eventTitle: event.eventTitle,
-        eventImg: event.eventImg,
-        eventPlaceName: event.eventPlaceName,
-        eventSdate: event.eventSdate,
+      final nearby = info.homeData.nearbyEvent.first;
+      fallbackEvent = Event(
+        eventId: nearby.eventId,
+        eventTitle: nearby.eventTitle,
+        eventImg: nearby.eventImg,
+        eventSdate: nearby.eventSdate,
+        eventPlaceName: nearby.eventPlaceName,
+      );
+    } else if (info.homeData.latestEvent.isNotEmpty) {
+      fallbackEvent = info.homeData.latestEvent.first;
+    }
+    if (fallbackEvent != null) {
+      return _FeaturedBannerData(
+        type: "event",
+        title: fallbackEvent.eventTitle,
+        subtitle:
+            "${fallbackEvent.eventPlaceName} • ${fallbackEvent.eventSdate}",
+        image: fallbackEvent.eventImg,
+        buttonTitle: "",
+        pillName: "",
+        eventId: fallbackEvent.eventId,
+        pageId: "",
+        pageDescription: "",
       );
     }
 
-    if (info.homeData.latestEvent.isNotEmpty) {
-      final event = info.homeData.latestEvent.first;
-      return _BannerData(
-        eventId: event.eventId,
-        eventTitle: event.eventTitle,
-        eventImg: event.eventImg,
-        eventPlaceName: event.eventPlaceName,
-        eventSdate: event.eventSdate,
-      );
-    }
-
-    return _BannerData(
+    return _FeaturedBannerData(
+      type: "event",
+      title: "TenAlly 2026",
+      subtitle: "Theatre Marina • Coming Soon",
+      image: "",
+      buttonTitle: "",
+      pillName: "",
       eventId: "",
-      eventTitle: "TenAlly 2026",
-      eventImg: "",
-      eventPlaceName: "Theatre Marina",
-      eventSdate: "Coming Soon",
+      pageId: "",
+      pageDescription: "",
     );
   }
 
-  Widget _buildFeaturedBanner(_BannerData event, {bool compact = false}) {
+  Widget _buildFeaturedBanner(
+    _FeaturedBannerData event, {
+    bool compact = false,
+  }) {
     final bannerHeight = Get.size.height * (compact ? 0.448 : 0.56);
-    final bool isPlaceholder = event.eventId.isEmpty;
+    final bool isPlaceholder = !event.isPage && event.eventId.isEmpty;
+    final pillLabel = event.pillName.isNotEmpty
+        ? event.pillName
+        : "featured_event".tr;
+    final buttonLabel = event.buttonTitle.isNotEmpty
+        ? event.buttonTitle
+        : "explore_event".tr;
 
     return Padding(
       padding: compact
           ? const EdgeInsets.fromLTRB(16, 0, 16, 10)
           : const EdgeInsets.fromLTRB(16, 16, 16, 10),
       child: GestureDetector(
-        onTap: isPlaceholder ? null : () => _openEvent(event.eventId),
+        onTap: isPlaceholder ? null : () => _openFeatured(event),
         child: Container(
           height: bannerHeight,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
-            color: event.eventImg.isEmpty ? const Color(0xFF050B26) : null,
-            image: event.eventImg.isNotEmpty
+            color: event.image.isEmpty ? const Color(0xFF050B26) : null,
+            image: event.image.isNotEmpty
                 ? DecorationImage(
-                    image: NetworkImage("${Config.imageUrl}${event.eventImg}"),
+                    image: NetworkImage("${Config.imageUrl}${event.image}"),
                     fit: BoxFit.cover,
                   )
                 : null,
@@ -1827,7 +1845,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: const Color.fromARGB(89, 0, 0, 0),
                 blurRadius: 18,
                 offset: const Offset(0, 10),
-              )
+              ),
             ],
           ),
           child: Stack(
@@ -1847,20 +1865,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 18,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFDAA520),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
-                        "featured_event".tr,
+                        pillLabel,
                         style: TextStyle(
                           fontFamily: FontFamily.gilroyMedium,
                           fontSize: 12,
@@ -1871,7 +1893,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const Spacer(),
                     Text(
-                      event.eventTitle,
+                      event.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -1882,7 +1904,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      "${event.eventPlaceName} • ${event.eventSdate}",
+                      event.subtitle,
                       style: TextStyle(
                         fontFamily: FontFamily.gilroyMedium,
                         color: Colors.white70,
@@ -1898,15 +1920,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 26, vertical: 12),
+                          horizontal: 26,
+                          vertical: 12,
+                        ),
                       ),
-                      onPressed:
-                          isPlaceholder ? null : () => _openEvent(event.eventId),
+                      onPressed: isPlaceholder
+                          ? null
+                          : () => _openFeatured(event),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            "explore_event".tr,
+                            buttonLabel,
                             style: TextStyle(
                               fontFamily: FontFamily.gilroyBold,
                               fontSize: 14,
@@ -1933,7 +1958,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Event> _getDisplayedEvents(HomeData homeData) {
     if (selectedCategoryId == 'all') {
-      return homeData.thisMonthEvent;
+      return homeData.latestEvent;
     }
     return selectedCategoryEvents
         .map(
@@ -1994,10 +2019,7 @@ class _HomeScreenState extends State<HomeScreen> {
         "cat_id": catId,
       };
       final uri = Uri.parse(Config.baseurl + Config.catWiseEvent);
-      final response = await http.post(
-        uri,
-        body: jsonEncode(map),
-      );
+      final response = await http.post(uri, body: jsonEncode(map));
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
         final data = result["CatEventData"];
@@ -2094,10 +2116,7 @@ class _HomeScreenState extends State<HomeScreen> {
         await eventDetailsController.getEventData(eventId: event.eventId);
         Get.toNamed(
           Routes.eventDetailsScreen,
-          arguments: {
-            "eventId": event.eventId,
-            "bookStatus": "1",
-          },
+          arguments: {"eventId": event.eventId, "bookStatus": "1"},
         );
       },
       child: Container(
@@ -2181,21 +2200,30 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
 }
 
-class _BannerData {
+class _FeaturedBannerData {
+  final String type;
+  final String title;
+  final String subtitle;
+  final String image;
+  final String buttonTitle;
+  final String pillName;
   final String eventId;
-  final String eventTitle;
-  final String eventImg;
-  final String eventPlaceName;
-  final String eventSdate;
+  final String pageId;
+  final String pageDescription;
 
-  _BannerData({
+  _FeaturedBannerData({
+    required this.type,
+    required this.title,
+    required this.subtitle,
+    required this.image,
+    required this.buttonTitle,
+    required this.pillName,
     required this.eventId,
-    required this.eventTitle,
-    required this.eventImg,
-    required this.eventPlaceName,
-    required this.eventSdate,
+    required this.pageId,
+    required this.pageDescription,
   });
+
+  bool get isPage => type.toLowerCase() == "page";
 }

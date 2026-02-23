@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.theatremarina.userapp">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Theatre Marina"
@@ -7,7 +6,7 @@
         android:icon="@mipmap/ic_launcher">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="**********************"/>
+            android:value="AIzaSyBn6zw1TCg-WLEHhztqDDRxb30zY1Qq630"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

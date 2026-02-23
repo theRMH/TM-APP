@@ -27,7 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      _authController.login(countryCode: _countryCode);
+      _authController.startPhoneAuthentication(
+        countryCode: _countryCode,
+        isSignUp: false,
+      );
     }
   }
 
@@ -150,9 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Text(
                       "Don't have an account?".tr,
-                      style: TextStyle(
-                        fontFamily: FontFamily.gilroyMedium,
-                      ),
+                      style: TextStyle(fontFamily: FontFamily.gilroyMedium),
                     ),
                     TextButton(
                       onPressed: () => Get.to(() => const SignUpScreen()),
@@ -175,7 +176,10 @@ class _LoginScreenState extends State<LoginScreen> {
         currentIndex: _selectedNavIndex,
         onTap: _onNavTap,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: const TextStyle(fontFamily: 'Gilroy Bold', fontSize: 12),
+        selectedLabelStyle: const TextStyle(
+          fontFamily: 'Gilroy Bold',
+          fontSize: 12,
+        ),
         unselectedLabelStyle: const TextStyle(fontFamily: 'Gilroy Medium'),
         selectedItemColor: gradient.defoultColor,
         unselectedItemColor: greytext,

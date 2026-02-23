@@ -58,6 +58,10 @@
                   </ul>
                </li>
                <li class="sidebar-list">
+                  <a class="sidebar-link sidebar-title link-nav" href="featured_event.php">
+                  <i data-feather="star"></i><span>Featured Event</span></a>
+               </li>
+               <li class="sidebar-list">
                   <a class="sidebar-link sidebar-title" href="javascript:void(0);">
                   <i data-feather="help-circle"></i><span >FAQ</span></a>
                   <ul class="sidebar-submenu">

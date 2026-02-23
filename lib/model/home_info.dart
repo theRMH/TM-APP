@@ -22,18 +22,18 @@ class HomeInfo {
   });
 
   factory HomeInfo.fromJson(Map<String, dynamic> json) => HomeInfo(
-        responseCode: json["ResponseCode"],
-        result: json["Result"],
-        responseMsg: json["ResponseMsg"],
-        homeData: HomeData.fromJson(json["HomeData"]),
-      );
+    responseCode: json["ResponseCode"],
+    result: json["Result"],
+    responseMsg: json["ResponseMsg"],
+    homeData: HomeData.fromJson(json["HomeData"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "ResponseCode": responseCode,
-        "Result": result,
-        "ResponseMsg": responseMsg,
-        "HomeData": homeData.toJson(),
-      };
+    "ResponseCode": responseCode,
+    "Result": result,
+    "ResponseMsg": responseMsg,
+    "HomeData": homeData.toJson(),
+  };
 }
 
 class HomeData {
@@ -44,6 +44,7 @@ class HomeData {
   List<Event> upcomingEvent;
   List<NearbyEvent> nearbyEvent;
   List<Event> thisMonthEvent;
+  FeaturedData? featured;
 
   HomeData({
     required this.catlist,
@@ -53,34 +54,44 @@ class HomeData {
     required this.upcomingEvent,
     required this.nearbyEvent,
     required this.thisMonthEvent,
+    this.featured,
   });
 
   factory HomeData.fromJson(Map<String, dynamic> json) => HomeData(
-        catlist:
-            List<Catlist>.from(json["Catlist"].map((x) => Catlist.fromJson(x))),
-        mainData: MainData.fromJson(json["Main_Data"]),
-        latestEvent: List<Event>.from(
-            json["latest_event"].map((x) => Event.fromJson(x))),
-        wallet: json["wallet"],
-        upcomingEvent: List<Event>.from(
-            json["upcoming_event"].map((x) => Event.fromJson(x))),
-        nearbyEvent: List<NearbyEvent>.from(
-            json["nearby_event"].map((x) => NearbyEvent.fromJson(x))),
-        thisMonthEvent: List<Event>.from(
-            json["this_month_event"].map((x) => Event.fromJson(x))),
-      );
+    catlist: List<Catlist>.from(
+      json["Catlist"].map((x) => Catlist.fromJson(x)),
+    ),
+    mainData: MainData.fromJson(json["Main_Data"]),
+    latestEvent: List<Event>.from(
+      json["latest_event"].map((x) => Event.fromJson(x)),
+    ),
+    wallet: json["wallet"],
+    upcomingEvent: List<Event>.from(
+      json["upcoming_event"].map((x) => Event.fromJson(x)),
+    ),
+    nearbyEvent: List<NearbyEvent>.from(
+      json["nearby_event"].map((x) => NearbyEvent.fromJson(x)),
+    ),
+    thisMonthEvent: List<Event>.from(
+      json["this_month_event"].map((x) => Event.fromJson(x)),
+    ),
+    featured: json["featured"] != null && json["featured"] is Map
+        ? FeaturedData.fromJson(json["featured"])
+        : null,
+  );
 
   Map<String, dynamic> toJson() => {
-        "Catlist": List<dynamic>.from(catlist.map((x) => x.toJson())),
-        "Main_Data": mainData.toJson(),
-        "latest_event": List<dynamic>.from(latestEvent.map((x) => x.toJson())),
-        "wallet": wallet,
-        "upcoming_event":
-            List<dynamic>.from(upcomingEvent.map((x) => x.toJson())),
-        "nearby_event": List<dynamic>.from(nearbyEvent.map((x) => x.toJson())),
-        "this_month_event":
-            List<dynamic>.from(thisMonthEvent.map((x) => x.toJson())),
-      };
+    "Catlist": List<dynamic>.from(catlist.map((x) => x.toJson())),
+    "Main_Data": mainData.toJson(),
+    "latest_event": List<dynamic>.from(latestEvent.map((x) => x.toJson())),
+    "wallet": wallet,
+    "upcoming_event": List<dynamic>.from(upcomingEvent.map((x) => x.toJson())),
+    "nearby_event": List<dynamic>.from(nearbyEvent.map((x) => x.toJson())),
+    "this_month_event": List<dynamic>.from(
+      thisMonthEvent.map((x) => x.toJson()),
+    ),
+    "featured": featured?.toJson(),
+  };
 }
 
 class Catlist {
@@ -99,20 +110,20 @@ class Catlist {
   });
 
   factory Catlist.fromJson(Map<String, dynamic> json) => Catlist(
-        id: json["id"],
-        title: json["title"],
-        catImg: json["cat_img"],
-        coverImg: json["cover_img"],
-        totalEvent: json["total_event"],
-      );
+    id: json["id"],
+    title: json["title"],
+    catImg: json["cat_img"],
+    coverImg: json["cover_img"],
+    totalEvent: json["total_event"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "cat_img": catImg,
-        "cover_img": coverImg,
-        "total_event": totalEvent,
-      };
+    "id": id,
+    "title": title,
+    "cat_img": catImg,
+    "cover_img": coverImg,
+    "total_event": totalEvent,
+  };
 }
 
 class Event {
@@ -131,20 +142,20 @@ class Event {
   });
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
-        eventId: json["event_id"],
-        eventTitle: json["event_title"],
-        eventImg: json["event_img"],
-        eventSdate: json["event_sdate"],
-        eventPlaceName: json["event_place_name"],
-      );
+    eventId: json["event_id"],
+    eventTitle: json["event_title"],
+    eventImg: json["event_img"],
+    eventSdate: json["event_sdate"],
+    eventPlaceName: json["event_place_name"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "event_id": eventId,
-        "event_title": eventTitle,
-        "event_img": eventImg,
-        "event_sdate": eventSdate,
-        "event_place_name": eventPlaceName,
-      };
+    "event_id": eventId,
+    "event_title": eventTitle,
+    "event_img": eventImg,
+    "event_sdate": eventSdate,
+    "event_place_name": eventPlaceName,
+  };
 }
 
 class MainData {
@@ -163,20 +174,20 @@ class MainData {
   });
 
   factory MainData.fromJson(Map<String, dynamic> json) => MainData(
-        id: json["id"],
-        currency: json["currency"],
-        scredit: json["scredit"],
-        rcredit: json["rcredit"],
-        tax: json["tax"],
-      );
+    id: json["id"],
+    currency: json["currency"],
+    scredit: json["scredit"],
+    rcredit: json["rcredit"],
+    tax: json["tax"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "currency": currency,
-        "scredit": scredit,
-        "rcredit": rcredit,
-        "tax": tax,
-      };
+    "id": id,
+    "currency": currency,
+    "scredit": scredit,
+    "rcredit": rcredit,
+    "tax": tax,
+  };
 }
 
 class NearbyEvent {
@@ -199,22 +210,82 @@ class NearbyEvent {
   });
 
   factory NearbyEvent.fromJson(Map<String, dynamic> json) => NearbyEvent(
-        eventId: json["event_id"],
-        eventTitle: json["event_title"],
-        eventImg: json["event_img"],
-        eventSdate: json["event_sdate"],
-        eventPlaceName: json["event_place_name"],
-        eventLatitude: json["event_latitude"],
-        eventLongtitude: json["event_longtitude"],
-      );
+    eventId: json["event_id"],
+    eventTitle: json["event_title"],
+    eventImg: json["event_img"],
+    eventSdate: json["event_sdate"],
+    eventPlaceName: json["event_place_name"],
+    eventLatitude: json["event_latitude"],
+    eventLongtitude: json["event_longtitude"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "event_id": eventId,
-        "event_title": eventTitle,
-        "event_img": eventImg,
-        "event_sdate": eventSdate,
-        "event_place_name": eventPlaceName,
-        "event_latitude": eventLatitude,
-        "event_longtitude": eventLongtitude,
-      };
+    "event_id": eventId,
+    "event_title": eventTitle,
+    "event_img": eventImg,
+    "event_sdate": eventSdate,
+    "event_place_name": eventPlaceName,
+    "event_latitude": eventLatitude,
+    "event_longtitude": eventLongtitude,
+  };
+}
+
+class FeaturedData {
+  String type;
+  String eventId;
+  String pageId;
+  String title;
+  String description;
+  String buttonTitle;
+  String pillName;
+  String image;
+  String eventPlaceName;
+  String eventSdate;
+  int status;
+
+  FeaturedData({
+    required this.type,
+    required this.eventId,
+    required this.pageId,
+    required this.title,
+    required this.description,
+    required this.buttonTitle,
+    required this.pillName,
+    required this.image,
+    required this.eventPlaceName,
+    required this.eventSdate,
+    required this.status,
+  });
+
+  bool get isEnabled => status == 1;
+
+  factory FeaturedData.fromJson(Map<String, dynamic> json) => FeaturedData(
+    type: json["type"]?.toString() ?? "event",
+    eventId: json["event_id"]?.toString() ?? "",
+    pageId: json["page_id"]?.toString() ?? "",
+    title: json["title"]?.toString() ?? "",
+    description: json["description"]?.toString() ?? "",
+    buttonTitle: json["button_title"]?.toString() ?? "",
+    pillName: json["pill_name"]?.toString() ?? "",
+    image: json["image"]?.toString() ?? "",
+    eventPlaceName: json["event_place_name"]?.toString() ?? "",
+    eventSdate: json["event_sdate"]?.toString() ?? "",
+    status: json["status"] != null
+        ? int.tryParse(json["status"].toString()) ?? 1
+        : 1,
+  );
+
+  Map<String, dynamic> toJson() => {
+    "type": type,
+    "event_id": eventId,
+    "page_id": pageId,
+    "title": title,
+    "description": description,
+    "button_title": buttonTitle,
+    "pill_name": pillName,
+    "image": image,
+    "event_place_name": eventPlaceName,
+    "event_sdate": eventSdate,
+    "status": status,
+  };
 }

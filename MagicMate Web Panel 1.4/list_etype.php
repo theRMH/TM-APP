@@ -99,13 +99,20 @@
                                     <?php } ?>
                                     <td style="white-space: nowrap; width: 15%;">
                                        <div class="tabledit-toolbar btn-toolbar" style="text-align: left;">
-                                          <div class="btn-group btn-group-sm" style="float: none;">
-                                             <a href="add_etype.php?id=<?php echo $row[
-                                                "id"
-                                                ]; ?>" class="badge badge-info" ><i data-feather="edit-3"></i></a>
+                                             <div class="btn-group btn-group-sm" style="float: none;">
+                                                <a href="add_etype.php?id=<?php echo $row[
+                                                   "id"
+                                                   ]; ?>" class="badge badge-info" ><i data-feather="edit-3"></i></a>
+                                                <form method="post" class="delete-type-form d-inline" style="display: inline-block; margin-left: 4px;">
+                                                   <input type="hidden" name="type" value="delete_type"/>
+                                                   <input type="hidden" name="id" value="<?php echo $row["id"]; ?>"/>
+                                                   <button type="submit" class="badge badge-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Ticket Type">
+                                                      <i data-feather="trash-2"></i>
+                                                   </button>
+                                                </form>
+                                             </div>
                                           </div>
-                                       </div>
-                                    </td>
+                                       </td>
                                  </tr>
                                  <?php
                                     }

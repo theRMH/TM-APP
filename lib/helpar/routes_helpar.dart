@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:get/route_manager.dart';
+import 'routes_const.dart';
+export 'routes_const.dart';
 
 import '../screen/LoginAndSignup/onbording_screen.dart.dart';
 import '../screen/LoginAndSignup/otp_screen.dart';
+import '../screen/LoginAndSignup/otp_verification_screen.dart';
 import '../screen/LoginAndSignup/resetpassword_screen.dart';
 import '../screen/LoginAndSignup/signup_screen.dart';
 import '../screen/addwallet/addwallet_screen.dart';
@@ -16,23 +19,6 @@ import '../screen/order_details.dart';
 import '../screen/profile/editprofile_screen.dart';
 import '../screen/profile/loream.dart';
 import '../screen/ticket_details.dart';
-
-class Routes {
-  static String initial = "/";
-  static String eventDetailsScreen = "/eventDetailsScreen";
-  static String tikitDetailsScreen = "/tikitDetailsScreen";
-  static String orderDetailsScreen = "/orderDetailsScreen";
-  static String otpScreen = '/otpScreen';
-  static String bottoBarScreen = "/bottoBarScreen";
-  static String resetPassword = "/resetPassword";
-  static String signUpScreen = "/signUpScreen";
-  static String editProfileScreen = "/viewProfileScreen";
-  static String loreamScreen = "/loreamScreen";
-  static String addWalletScreen = "/addWalletScreen";
-  static String walletScreen = "/walletScreen";
-  static String couponScreen = "/couponScreen";
-  static String catWiseEventScreen = "/catWiseEvent";
-}
 
 final getPages = [
   GetPage(
@@ -54,6 +40,10 @@ final getPages = [
   GetPage(
     name: Routes.otpScreen,
     page: () => OtpScreen(),
+  ),
+  GetPage(
+    name: Routes.otpVerificationScreen,
+    page: () => const OtpVerificationScreen(),
   ),
   GetPage(
     name: Routes.bottoBarScreen,

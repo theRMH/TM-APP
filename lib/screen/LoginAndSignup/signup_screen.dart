@@ -35,8 +35,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _submit() {
+    if (_authController.isSendingOtp) {
+      return;
+    }
     if (_formKey.currentState?.validate() ?? false) {
-      _authController.signUp(countryCode: _countryCode);
+      _authController.startPhoneAuthentication(
+        countryCode: _countryCode,
+        isSignUp: true,
+      );
     }
   }
 
@@ -48,36 +54,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: BlackColor),
-                    onPressed: () => Get.back(),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    "Create Account".tr,
-                    style: TextStyle(
-                      fontFamily: FontFamily.gilroyBold,
-                      fontSize: 32,
-                      color: BlackColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: BlackColor),
+                      onPressed: () => Get.back(),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Sign up to continue".tr,
-                style: TextStyle(
-                  fontFamily: FontFamily.gilroyMedium,
-                  fontSize: 16,
-                  color: greytext,
+                    const SizedBox(width: 8),
+                    Text(
+                      "Create Account".tr,
+                      style: TextStyle(
+                        fontFamily: FontFamily.gilroyBold,
+                        fontSize: 32,
+                        color: BlackColor,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 8),
+                Text(
+                  "Sign up to continue".tr,
+                  style: TextStyle(
+                    fontFamily: FontFamily.gilroyMedium,
+                    fontSize: 16,
+                    color: greytext,
+                  ),
+                ),
+                const SizedBox(height: 32),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -134,47 +140,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      GetBuilder<AuthController>(builder: (controller) {
-                        return TextFormField(
-                          controller: controller.password,
-                          obscureText: controller.showPassword,
-                          decoration: InputDecoration(
-                            labelText: "Password".tr,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                controller.showPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                      GetBuilder<AuthController>(
+                        builder: (controller) {
+                          return TextFormField(
+                            controller: controller.password,
+                            obscureText: controller.showPassword,
+                            decoration: InputDecoration(
+                              labelText: "Password".tr,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              onPressed: controller.togglePasswordVisibility,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  controller.showPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: controller.togglePasswordVisibility,
+                              ),
                             ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter your password".tr;
-                            }
-                            if (value.length < 6) {
-                              return "Password must be at least 6 characters".tr;
-                            }
-                            return null;
-                          },
-                        );
-                      }),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your password".tr;
+                              }
+                              if (value.length < 6) {
+                                return "Password must be at least 6 characters"
+                                    .tr;
+                              }
+                              return null;
+                            },
+                          );
+                        },
+                      ),
                       const SizedBox(height: 30),
-                      GestButton(
-                        Width: double.infinity,
-                        height: 50,
-                        buttoncolor: gradient.defoultColor,
-                        buttontext: "Sign Up".tr,
-                        onclick: _submit,
-                        style: TextStyle(
-                          fontFamily: FontFamily.gilroyBold,
-                          color: WhiteColor,
-                          fontSize: 16,
-                        ),
+                      GetBuilder<AuthController>(
+                        builder: (controller) {
+                          final label = controller.isSendingOtp
+                              ? "Sending OTP...".tr
+                              : "Sign Up".tr;
+                          return GestButton(
+                            Width: double.infinity,
+                            height: 50,
+                            buttoncolor: gradient.defoultColor,
+                            buttontext: label,
+                            onclick: controller.isSendingOtp ? null : _submit,
+                            style: TextStyle(
+                              fontFamily: FontFamily.gilroyBold,
+                              color: WhiteColor,
+                              fontSize: 16,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -185,9 +201,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   children: [
                     Text(
                       "Already have an account?".tr,
-                      style: TextStyle(
-                        fontFamily: FontFamily.gilroyMedium,
-                      ),
+                      style: TextStyle(fontFamily: FontFamily.gilroyMedium),
                     ),
                     TextButton(
                       onPressed: () => Get.to(() => const LoginScreen()),
@@ -210,10 +224,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         currentIndex: _selectedNavIndex,
         onTap: _onNavTap,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle:
-            const TextStyle(fontFamily: 'Gilroy Bold', fontSize: 12),
-        unselectedLabelStyle:
-            const TextStyle(fontFamily: 'Gilroy Medium'),
+        selectedLabelStyle: const TextStyle(
+          fontFamily: 'Gilroy Bold',
+          fontSize: 12,
+        ),
+        unselectedLabelStyle: const TextStyle(fontFamily: 'Gilroy Medium'),
         selectedItemColor: gradient.defoultColor,
         unselectedItemColor: greytext,
         items: [
@@ -221,8 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             icon: Image.asset(
               "assets/home-dash.png",
               height: Get.size.height / 35,
-              color:
-                  _selectedNavIndex == 0 ? gradient.defoultColor : greytext,
+              color: _selectedNavIndex == 0 ? gradient.defoultColor : greytext,
             ),
             label: 'Home'.tr,
           ),
@@ -230,8 +244,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             icon: Icon(
               Icons.theaters,
               size: Get.size.height / 35,
-              color:
-                  _selectedNavIndex == 1 ? gradient.defoultColor : greytext,
+              color: _selectedNavIndex == 1 ? gradient.defoultColor : greytext,
             ),
             label: 'Theatre'.tr,
           ),
@@ -239,8 +252,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             icon: Image.asset(
               "assets/Ticket.png",
               height: Get.size.height / 35,
-              color:
-                  _selectedNavIndex == 2 ? gradient.defoultColor : greytext,
+              color: _selectedNavIndex == 2 ? gradient.defoultColor : greytext,
             ),
             label: 'Tenally'.tr,
           ),
@@ -248,8 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             icon: Image.asset(
               "assets/Profile.png",
               height: Get.size.height / 35,
-              color:
-                  _selectedNavIndex == 3 ? gradient.defoultColor : greytext,
+              color: _selectedNavIndex == 3 ? gradient.defoultColor : greytext,
             ),
             label: 'Profile'.tr,
           ),

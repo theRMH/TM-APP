@@ -37,7 +37,7 @@ if ($uid === '') {
     $event = $evmulti->query(
         "select id,title,img,place_name,sdate,stime,etime from tbl_event
  where event_status='Pending'
-  and status=1 order by id desc"
+  and status=1 order by sdate desc"
     );
     $ev = [];
     while ($row = $event->fetch_assoc()) {
@@ -148,6 +148,79 @@ if ($uid === '') {
         $wallet = $tbwallet["wallet"];
     }
 
+    $featured = null;
+    $featuredRow = $evmulti
+        ->query("SELECT * FROM `tbl_featured_event` ORDER BY id DESC LIMIT 1")
+        ->fetch_assoc();
+    if ($featuredRow) {
+        $featureType = $featuredRow["type"] ?? "event";
+        $eventPlace = "";
+        $eventDate = "";
+        $title = $featuredRow["title"] ?? "";
+        $description = $featuredRow["description"] ?? "";
+        $image = $featuredRow["image"] ?? "";
+        if ($featureType === "event" && !empty($featuredRow["event_id"])) {
+            $eventRecord = $evmulti
+                ->query(
+                    "select title,img,place_name,sdate,stime,etime from tbl_event where id=" .
+                        intval($featuredRow["event_id"])
+                )
+                ->fetch_assoc();
+            if ($eventRecord) {
+                $eventPlace = $eventRecord["place_name"];
+                $eventDate =
+                    date_format(
+                        date_create($eventRecord["sdate"]),
+                        NEW_FORMAT
+                    ) .
+                    "-" .
+                    date(DATE_FORMAT, strtotime($eventRecord["stime"])) .
+                    "-" .
+                    date(DATE_FORMAT, strtotime($eventRecord["etime"]));
+                if (empty($image)) {
+                    $image = $eventRecord["img"];
+                }
+                if (empty($title)) {
+                    $title = $eventRecord["title"];
+                }
+                if (empty($description)) {
+                    $description = trim($eventPlace . " • " . $eventDate);
+                }
+            }
+        } elseif (
+            $featureType === "page" &&
+            !empty($featuredRow["page_id"])
+        ) {
+            $pageRecord = $evmulti
+                ->query(
+                    "select title,description from tbl_page where id=" .
+                        intval($featuredRow["page_id"])
+                )
+                ->fetch_assoc();
+            if ($pageRecord) {
+                if (empty($title)) {
+                    $title = $pageRecord["title"];
+                }
+                if (empty($description)) {
+                    $description = $pageRecord["description"];
+                }
+            }
+        }
+        $featured = [
+            "type" => $featureType,
+            "event_id" => $featuredRow["event_id"] ?? "",
+            "page_id" => $featuredRow["page_id"] ?? "",
+            "title" => $title,
+            "description" => $description,
+            "button_title" => $featuredRow["button_title"] ?? "",
+            "pill_name" => $featuredRow["pill_name"] ?? "",
+            "image" => $image,
+            "status" => intval($featuredRow["status"] ?? 1),
+            "event_place_name" => $eventPlace,
+            "event_sdate" => $eventDate,
+        ];
+    }
+
     $kp = [
         "Catlist" => $cp,
         "Main_Data" => $pols,
@@ -156,6 +229,7 @@ if ($uid === '') {
         "upcoming_event" => $pop,
         "nearby_event" => $popss,
         "this_month_event" => $pops,
+        "featured" => $featured,
     ];
 
     $returnArr = [

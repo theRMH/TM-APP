@@ -70,6 +70,15 @@ $(document).ready(function(){
   });
 });
 </script>
+<script>
+$(document).on('submit', '.delete-type-form', function(e){
+  if (!confirm('Are you sure you want to delete this ticket type and price?')) {
+    e.stopImmediatePropagation && e.stopImmediatePropagation();
+    e.preventDefault();
+    return false;
+  }
+});
+</script>
 <!-- Generic AJAX handler for forms that include a hidden input `name="type"` -->
 <script>
 $(document).on('submit', 'form', function(e){

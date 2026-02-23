@@ -313,7 +313,124 @@ if (isset($_POST["type"])) {
             ];
         }
     }
-	elseif ($_POST["type"] == "add_faq") {
+    elseif ($_POST["type"] == "save_featured_event") {
+        if (!isset($_SESSION["stype"]) || $_SESSION["stype"] !== "mowner") {
+            $returnArr = [
+                "ResponseCode" => "401",
+                "Result" => "false",
+                "title" => "Permission denied!",
+                "message" => "Only the master admin can update the featured section.",
+                "action" => "dashboard.php",
+            ];
+        } else {
+            $featuredType = $_POST["featured_type"] ?? "event";
+            $eventId = isset($_POST["event_id"]) ? intval($_POST["event_id"]) : 0;
+            $pageId = isset($_POST["page_id"]) ? intval($_POST["page_id"]) : 0;
+            $title = $evmulti->real_escape_string($_POST["title"] ?? "");
+            $description = $evmulti->real_escape_string($_POST["description"] ?? "");
+            $buttonTitle = $evmulti->real_escape_string($_POST["button_title"] ?? "");
+            $pillName = $evmulti->real_escape_string($_POST["pill_name"] ?? "");
+            $imagePath = trim($_POST["existing_image"] ?? "");
+            if (
+                isset($_FILES["featured_image"]) &&
+                !empty($_FILES["featured_image"]["name"])
+            ) {
+                $target_dir = dirname(dirname(__FILE__)) . "/images/featured/";
+                if (!file_exists($target_dir)) {
+                    mkdir($target_dir, 0755, true);
+                }
+                $temp = explode(".", $_FILES["featured_image"]["name"]);
+                $newFile = round(microtime(true)) . "." . end($temp);
+                $target_file = $target_dir . basename($newFile);
+                if (move_uploaded_file(
+                    $_FILES["featured_image"]["tmp_name"],
+                    $target_file
+                )) {
+                    $imagePath = "images/featured/" . basename($newFile);
+                }
+            }
+            if ($featuredType !== "event") {
+                $eventId = 0;
+            }
+            if ($featuredType !== "page") {
+                $pageId = 0;
+            }
+            $table = "tbl_featured_event";
+            $data = [
+                "type" => $featuredType,
+                "event_id" => $eventId,
+                "page_id" => $pageId,
+                "title" => $title,
+                "description" => $description,
+                "button_title" => $buttonTitle,
+                "pill_name" => $pillName,
+                "image" => $imagePath,
+                "status" => 1,
+            ];
+            $h = new Event();
+            $featuredId = isset($_POST["featured_id"]) && is_numeric($_POST["featured_id"])
+                ? intval($_POST["featured_id"])
+                : 0;
+            if ($featuredId > 0) {
+                $where = "where id=" . $featuredId;
+                $check = $h->evmultiupdateData($data, $table, $where);
+            } else {
+                $field_values = array_keys($data);
+                $data_values = array_values($data);
+                $check = $h->evmultiinsertdata($field_values, $data_values, $table);
+            }
+            if ($check == 1) {
+                $returnArr = [
+                    "ResponseCode" => "200",
+                    "Result" => "true",
+                    "title" => "Featured section saved!",
+                    "message" => "Featured section updated successfully.",
+                    "action" => "featured_event.php",
+                ];
+            } else {
+                $returnArr = [
+                    "ResponseCode" => "200",
+                    "Result" => "false",
+                    "title" =>
+                        "For Demo purpose all  Insert/Update/Delete are DISABLED !!",
+                    "message" => "Operation DISABLED!!",
+                    "action" => "featured_event.php",
+                ];
+            }
+        }
+    }
+    elseif ($_POST["type"] == "reset_featured_event") {
+        if (!isset($_SESSION["stype"]) || $_SESSION["stype"] !== "mowner") {
+            $returnArr = [
+                "ResponseCode" => "401",
+                "Result" => "false",
+                "title" => "Permission denied!",
+                "message" => "Only the master admin can reset the featured section.",
+                "action" => "dashboard.php",
+            ];
+        } else {
+            $check = $evmulti->query("TRUNCATE TABLE tbl_featured_event");
+            if ($check !== false) {
+                $returnArr = [
+                    "ResponseCode" => "200",
+                    "Result" => "true",
+                    "title" => "Featured section reset!",
+                    "message" => "Featured configuration removed.",
+                    "action" => "featured_event.php",
+                ];
+            } else {
+                $returnArr = [
+                    "ResponseCode" => "200",
+                    "Result" => "false",
+                    "title" =>
+                        "For Demo purpose all  Insert/Update/Delete are DISABLED !!",
+                    "message" => "Operation DISABLED!!",
+                    "action" => "featured_event.php",
+                ];
+            }
+        }
+    }
+    elseif ($_POST["type"] == "add_faq") {
         $okey = $_POST["status"];
         $question = $evmulti->real_escape_string($_POST["question"]);
         $answer = $evmulti->real_escape_string($_POST["answer"]);
@@ -1189,6 +1306,32 @@ else
 {
 	$returnArr = array("ResponseCode"=>"200","Result"=>"false","title"=>"For Demo purpose all  Insert/Update/Delete are DISABLED !!","message"=>"Operation DISABLED!!","action"=>"add_etype.php?id=".$id."");
 }
+
+}
+
+else if($_POST['type'] == 'delete_type')
+{
+	$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+	$sponsore_id = $sdata["id"];
+	if($id > 0)
+	{
+		$table="tbl_type_price";
+  		$where = "where id=".$id." and sponsore_id=".$sponsore_id."";
+		$h = new Event();
+	  $check = $h->evmultiDeleteData($where,$table);
+		if($check && $evmulti->affected_rows > 0)
+		{
+		$returnArr = array("ResponseCode"=>"200","Result"=>"true","title"=>"Type & Price Deleted Successfully!!","message"=>"Type & Price section deleted.","action"=>"list_etype.php");
+		}
+		else 
+		{
+		$returnArr = array("ResponseCode"=>"200","Result"=>"false","title"=>"Operation Failed!!","message"=>"Unable to delete the selected type and price.","action"=>"list_etype.php");
+		}
+	}
+	else 
+	{
+	$returnArr = array("ResponseCode"=>"200","Result"=>"false","title"=>"Invalid Request!!","message"=>"Unable to locate the selected price entry.","action"=>"list_etype.php");
+	}
 
 }
 else if($_POST['type'] == 'add_cover')

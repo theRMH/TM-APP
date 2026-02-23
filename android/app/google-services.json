@@ -12,7 +12,20 @@
           "package_name": "com.theatremarina.userapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "665743681926-ti9qsvkjfgf2b751skls43srsr0d4lie.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.theatremarina.userapp",
+            "certificate_hash": "a2aee757a2cb149e03d9cf33f3fa2446ff245715"
+          }
+        },
+        {
+          "client_id": "665743681926-14kfgm4odls64kaj53c3n0lm6ubv90v1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCMbW8ddDghDjGKsRONuqJRJ32sAXZMNnE"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665743681926-14kfgm4odls64kaj53c3n0lm6ubv90v1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

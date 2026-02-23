@@ -316,6 +316,31 @@ CREATE TABLE `tbl_page` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_featured_event`
+--
+
+CREATE TABLE `tbl_featured_event` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `type` enum('event','page') NOT NULL DEFAULT 'event',
+  `event_id` int DEFAULT NULL,
+  `page_id` int DEFAULT NULL,
+  `title` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `description` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `button_title` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `pill_name` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `image` text,
+  `status` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `tbl_featured_event`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_payment_list`
 --
 
@@ -653,6 +678,14 @@ ALTER TABLE `tbl_notification`
 ALTER TABLE `tbl_page`
   ADD PRIMARY KEY (`id`);
 
+-- --------------------------------------------------------
+
+--
+-- Indexes for table `tbl_featured_event`
+--
+ALTER TABLE `tbl_featured_event`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- Indexes for table `tbl_payment_list`
 --
@@ -795,6 +828,12 @@ ALTER TABLE `tbl_notification`
 -- AUTO_INCREMENT for table `tbl_page`
 --
 ALTER TABLE `tbl_page`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tbl_featured_event`
+--
+ALTER TABLE `tbl_featured_event`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --

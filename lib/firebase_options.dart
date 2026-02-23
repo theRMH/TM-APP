@@ -50,18 +50,18 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: '************-jNM',
-    appId: '1:************:android:**********',
-    messagingSenderId: '************',
-    projectId: '**-king-*******',
-    storageBucket: 'delivery-king-c74cb.firebasestorage.app',
+    apiKey: 'AIzaSyCMbW8ddDghDjGKsRONuqJRJ32sAXZMNnE',
+    appId: '1:665743681926:android:fd7bfaf7f9958a59dae407',
+    messagingSenderId: '665743681926',
+    projectId: 'theatre-marina',
+    storageBucket: 'theatre-marina.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: '*************',
-    appId: '1:************:ios:***********',
-    messagingSenderId: '**********',
-    projectId: '**-king-*******',
+    apiKey: 'AIzaSyAexLvAHJ6qGoyj_AdmfFGxd3_UM1LCyM4',
+    appId: '1:634529334132:ios:e47435e0b32ab041022221',
+    messagingSenderId: '634529334132',
+    projectId: 'delivery-king-c74cb',
     storageBucket: 'delivery-king-c74cb.firebasestorage.app',
     iosBundleId: 'com.theatremarina.userapp',
   );

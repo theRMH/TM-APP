@@ -8,6 +8,7 @@ import '../../controller/eventdetails_controller.dart';
 import '../../controller/home_controller.dart';
 import '../../helpar/routes_helpar.dart';
 import '../../model/fontfamily_model.dart';
+import '../../model/home_info.dart';
 import '../../utils/Colors.dart';
 
 class LatestEvent extends StatefulWidget {
@@ -56,20 +57,36 @@ class _LatestEventState extends State<LatestEvent> {
             return const Center(child: CircularProgressIndicator());
           }
           final homeData = homeInfo.homeData;
-          final latestEvents = homeData.latestEvent;
           final thisMonthEvents = homeData.thisMonthEvent;
+          final latestEvents = homeData.latestEvent;
           final nearbyEvents = homeData.nearbyEvent;
+          final nearbyAsEvents = nearbyEvents
+              .map(
+                (event) => Event(
+                  eventId: event.eventId,
+                  eventTitle: event.eventTitle,
+                  eventImg: event.eventImg,
+                  eventSdate: event.eventSdate,
+                  eventPlaceName: event.eventPlaceName,
+                ),
+              )
+              .toList();
+          final eventsToShow = widget.eventStaus == "3"
+              ? nearbyAsEvents
+              : widget.eventStaus == "2"
+                  ? thisMonthEvents
+                  : latestEvents;
           return Column(
             children: [
               widget.eventStaus == "1"
                   ? Expanded(
-                      child: latestEvents.isNotEmpty
+                      child: eventsToShow.isNotEmpty
                           ? ListView.builder(
-                              itemCount: latestEvents.length,
+                              itemCount: eventsToShow.length,
                               shrinkWrap: true,
                               physics: BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
-                                final event = latestEvents[index];
+                                final event = eventsToShow[index];
                                 return InkWell(
                                   onTap: () async {
                                     await eventDetailsController.getEventData(
@@ -103,7 +120,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                   "assets/ezgif.com-crop.gif",
                                               height: 140,
                                               image:
-                                                  "${Config.imageUrl}${event.eventImg ?? ""}",
+                                                  "${Config.imageUrl}${event.eventImg}",
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -121,7 +138,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                event.eventTitle ?? "",
+                                                event.eventTitle,
                                                 maxLines: 2,
                                                 style: TextStyle(
                                                   fontFamily:
@@ -134,7 +151,7 @@ class _LatestEventState extends State<LatestEvent> {
                                               ),
                                               SizedBox(height: 8),
                                               Text(
-                                                event.eventSdate ?? "",
+                                                event.eventSdate,
                                                 maxLines: 1,
                                                 style: TextStyle(
                                                   fontFamily:
@@ -159,8 +176,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                     width:
                                                         Get.size.width * 0.48,
                                                     child: Text(
-                                                      event.eventPlaceName ??
-                                                          "",
+                                                      event.eventPlaceName,
                                                       maxLines: 1,
                                                       style: TextStyle(
                                                         fontFamily: FontFamily
@@ -267,7 +283,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                   "assets/ezgif.com-crop.gif",
                                               height: 140,
                                               image:
-                                                  "${Config.imageUrl}${event.eventImg ?? ""}",
+                                                  "${Config.imageUrl}${event.eventImg}",
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -285,7 +301,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                event.eventTitle ?? "",
+                                                event.eventTitle,
                                                 maxLines: 2,
                                                 style: TextStyle(
                                                   fontFamily:
@@ -298,7 +314,7 @@ class _LatestEventState extends State<LatestEvent> {
                                               ),
                                               SizedBox(height: 8),
                                               Text(
-                                                event.eventSdate ?? "",
+                                                event.eventSdate,
                                                 maxLines: 1,
                                                 style: TextStyle(
                                                   fontFamily:
@@ -323,8 +339,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                     width:
                                                         Get.size.width * 0.48,
                                                     child: Text(
-                                                      event.eventPlaceName ??
-                                                          "",
+                                                      event.eventPlaceName,
                                                       style: TextStyle(
                                                         fontFamily: FontFamily
                                                             .gilroyMedium,
@@ -428,8 +443,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                   "assets/ezgif.com-crop.gif",
                                               height: 140,
                                               image:
-                                                  "\${Config.imageUrl}\${event.eventImg ?? "
-                                                  "}",
+                                                  "\${Config.imageUrl}\${event.eventImg}",
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -447,7 +461,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                event.eventTitle ?? "",
+                                                event.eventTitle,
                                                 maxLines: 2,
                                                 style: TextStyle(
                                                   fontFamily:
@@ -460,7 +474,7 @@ class _LatestEventState extends State<LatestEvent> {
                                               ),
                                               const SizedBox(height: 8),
                                               Text(
-                                                event.eventSdate ?? "",
+                                                event.eventSdate,
                                                 style: TextStyle(
                                                   fontFamily:
                                                       FontFamily.gilroyMedium,
@@ -482,8 +496,7 @@ class _LatestEventState extends State<LatestEvent> {
                                                     width:
                                                         Get.size.width * 0.45,
                                                     child: Text(
-                                                      event.eventPlaceName ??
-                                                          "",
+                                                      event.eventPlaceName,
                                                       maxLines: 1,
                                                       style: TextStyle(
                                                         fontFamily: FontFamily

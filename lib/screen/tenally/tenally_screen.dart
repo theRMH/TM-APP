@@ -56,7 +56,7 @@ class TenallyScreen extends StatelessWidget {
             fontSize: 18,
           ),
         ),
-        iconTheme: const IconThemeData(color: BlackColor),
+        iconTheme: IconThemeData(color: BlackColor),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

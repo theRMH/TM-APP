@@ -25,7 +25,7 @@ class TenallyArtistSubmissionScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: WhiteColor,
-            iconTheme: const IconThemeData(color: BlackColor),
+            iconTheme: IconThemeData(color: BlackColor),
             title: Text(
               "Artist Submission",
               style: TextStyle(
@@ -183,10 +183,13 @@ class TenallyArtistSubmissionScreen extends StatelessWidget {
     required String label,
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
-    Color hintColor = Colors.black45,
-    Color textColor = BlackColor,
-    Color labelColor = Greycolor,
+    Color? hintColor,
+    Color? textColor,
+    Color? labelColor,
   }) {
+    final resolvedHintColor = hintColor ?? Colors.black45;
+    final resolvedTextColor = textColor ?? BlackColor;
+    final resolvedLabelColor = labelColor ?? Greycolor;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,7 +198,7 @@ class TenallyArtistSubmissionScreen extends StatelessWidget {
           style: TextStyle(
             fontFamily: FontFamily.gilroyMedium,
             fontSize: 13,
-            color: labelColor,
+            color: resolvedLabelColor,
           ),
         ),
         const SizedBox(height: 4),
@@ -205,11 +208,11 @@ class TenallyArtistSubmissionScreen extends StatelessWidget {
           style: TextStyle(
             fontFamily: FontFamily.gilroyMedium,
             fontSize: 15,
-            color: textColor,
+            color: resolvedTextColor,
           ),
           decoration: InputDecoration(
             hintText: "Enter $label",
-            hintStyle: TextStyle(color: hintColor),
+            hintStyle: TextStyle(color: resolvedHintColor),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
             border: _inputBorder,
